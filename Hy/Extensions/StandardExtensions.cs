@@ -10,7 +10,7 @@ public static class StandardExtensions
     }
         
     // Kotlin: fun <T, R> T.let(block: (T) -> R): R
-    public static Tr Let<T, Tr>(this T self, Func<T, Tr> block) 
+    public static TR Let<T, TR>(this T self, Func<T, TR> block) 
     {
         return block(self);
     }

@@ -60,11 +60,11 @@ public static class AttributeHelper
     #region Property keySelector Attribute
         
     public static IEnumerable<TAttribute>? GetAttributes<TAttribute, TSource>(Expression<Func<TSource, dynamic?>> keySelector, bool isInherit) =>
-        typeof(TSource).GetAttributes<TAttribute>(THelper.GetMemberName(keySelector), isInherit);
+        typeof(TSource).GetAttributes<TAttribute>(TypeHelper.GetMemberName(keySelector), isInherit);
         
     public static TAttribute? GetAttribute<TAttribute, TSource>(Expression<Func<TSource, dynamic?>> keySelector, bool isInherit) 
         where TAttribute : Attribute =>
-        typeof(TSource).GetAttribute<TAttribute>(THelper.GetMemberName(keySelector), isInherit);
+        typeof(TSource).GetAttribute<TAttribute>(TypeHelper.GetMemberName(keySelector), isInherit);
 
     public static bool IsHasAttribute<TAttribute, TSource>(Expression<Func<TSource, dynamic?>> keySelector, bool isInherit)
         where TSource : class 
@@ -110,11 +110,11 @@ public static class AttributeHelper
     #region Field keySelector Attribute
         
     public static IEnumerable<TAttribute>? GetFieldAttributes<TAttribute, TSource>(Expression<Func<TSource, dynamic?>> keySelector, bool isInherit) =>
-        typeof(TSource).GetFieldAttributes<TAttribute>(THelper.GetMemberName(keySelector), isInherit);
+        typeof(TSource).GetFieldAttributes<TAttribute>(TypeHelper.GetMemberName(keySelector), isInherit);
         
     public static TAttribute? GetFieldAttribute<TAttribute, TSource>(Expression<Func<TSource, dynamic?>> keySelector, bool isInherit) 
         where TAttribute : Attribute =>
-        typeof(TSource).GetFieldAttribute<TAttribute>(THelper.GetMemberName(keySelector), isInherit);
+        typeof(TSource).GetFieldAttribute<TAttribute>(TypeHelper.GetMemberName(keySelector), isInherit);
 
     public static bool IsHasFieldAttribute<TAttribute, TSource>(Expression<Func<TSource, dynamic?>> keySelector, bool isInherit)
         where TSource : class 

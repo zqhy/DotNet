@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace Hy.Helper;
 
-public static class THelper
+public static class TypeHelper
 {
     public static string GetMemberName<T>(Expression<Func<T, dynamic?>> property)
     {
