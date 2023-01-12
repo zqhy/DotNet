@@ -5,12 +5,12 @@ namespace Hy;
 public record PagingParams
 {
     [Display(Name = "页码")]
-    public int Page { get; }
+    public int? Page { get; }
     
     [Display(Name = "每页记录数")]
-    public int PageSize { get; }
+    public int? PageSize { get; }
 
-    public PagingParams(int page, int pageSize)
+    public PagingParams(int? page, int? pageSize)
     {
         Page = page;
         PageSize = pageSize;
