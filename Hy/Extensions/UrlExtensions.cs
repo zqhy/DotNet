@@ -1,7 +1,6 @@
-using System.Text.Encodings.Web;
+using System.Collections.Specialized;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Unicode;
+using System.Text.RegularExpressions;
 
 namespace Hy.Extensions;
 
@@ -13,11 +12,11 @@ public static class UrlExtensions
     /// <param name="url">url链接</param>
     /// <param name="baseUrl"></param>
     /// <returns></returns>
-    public static System.Collections.Specialized.NameValueCollection? ParseUrl(this string url, out string? baseUrl)
+    public static NameValueCollection? ParseUrl(this string url, out string? baseUrl)
     {
         baseUrl = null;
         
-        var nvc = new System.Collections.Specialized.NameValueCollection();
+        var nvc = new NameValueCollection();
         try
         {
             var questionMarkIndex = url.IndexOf('?');
@@ -31,9 +30,9 @@ public static class UrlExtensions
             var ps = url[(questionMarkIndex + 1)..];
             
             // 开始分析参数对   
-            var re = new System.Text.RegularExpressions.Regex(@"(^|&)?(\w+)=([^&]+)(&|$)?", System.Text.RegularExpressions.RegexOptions.Compiled);
+            var re = new Regex(@"(^|&)?(\w+)=([^&]+)(&|$)?", RegexOptions.Compiled);
             var mc = re.Matches(ps);
-            foreach (System.Text.RegularExpressions.Match m in mc)
+            foreach (Match m in mc)
             {
                 nvc.Add(m.Result("$2").ToLower(), m.Result("$3"));
             }
@@ -44,21 +43,14 @@ public static class UrlExtensions
         }
         return nvc;
     }
-
-    private static readonly JsonSerializerOptions CreateGetMethodUrlJsonOptions = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // 忽略null值的属性
-        PropertyNameCaseInsensitive = true, //忽略大小写
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-        AllowTrailingCommas = true,
-    };
+    
     public static string ToQueryString(this object parameter, JsonSerializerOptions? options = null)
     {
-        var json = JsonSerializer.Serialize(parameter, options ?? CreateGetMethodUrlJsonOptions);
-        return string.Join("&", JsonSerializer.Deserialize<IDictionary<string, object>>(json, options ?? CreateGetMethodUrlJsonOptions)!.
+        var json = JsonSerializer.Serialize(parameter, options);
+        return string.Join("&", JsonSerializer.Deserialize<IDictionary<string, object>>(json, options)!.
             Select(p => $"{p.Key}={Uri.EscapeDataString(p.Value.ToString()!)}"));
     }
+    
     public static string ToQueryString(this IEnumerable<object> parameters, JsonSerializerOptions? options = null)
     {
         return string.Join("&", parameters.Select(p => p.ToQueryString(options)));
