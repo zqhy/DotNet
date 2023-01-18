@@ -1,5 +1,5 @@
 using System.Collections.Specialized;
-using System.Text.Json;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Hy.Extensions;
@@ -44,25 +44,72 @@ public static class UrlExtensions
         return nvc;
     }
     
-    public static string ToQueryString(this object parameter, JsonSerializerOptions? options = null)
+    public static string ToQueryString(this IEnumerable<object> parameters, string? dateTimeFormat)
     {
-        var json = JsonSerializer.Serialize(parameter, options);
-        return string.Join("&", JsonSerializer.Deserialize<IDictionary<string, object>>(json, options)!.
-            Select(p => $"{p.Key}={Uri.EscapeDataString(p.Value.ToString()!)}"));
-    }
-    
-    public static string ToQueryString(this IEnumerable<object> parameters, JsonSerializerOptions? options = null)
-    {
-        return string.Join("&", parameters.Select(p => p.ToQueryString(options)));
+        return string.Join("&", parameters.SelectMany(p => p.BuildQueryString(dateTimeFormat)));
     }
         
-    public static string? CreateGetMethodUrl(this string? requestUri, IEnumerable<object>? parameters, JsonSerializerOptions? options = null)
+    public static string? CreateGetMethodUrl(this string? requestUri, params object[] parameters)
     {
-        return parameters == null ? requestUri : $"{requestUri ?? ""}?{parameters.ToQueryString(options)}";
+        return parameters.Any() 
+            ? $"{requestUri ?? ""}?{parameters.ToQueryString(null)}" 
+            : requestUri;
     }
-
-    public static string? CreateGetMethodUrl(this string? requestUri, object? parameter, JsonSerializerOptions? options = null)
+        
+    public static string? CreateGetMethodUrl(this string? requestUri, string? dateTimeFormat,  params object[] parameters)
     {
-        return parameter == null ? requestUri :  $"{requestUri ?? ""}?{parameter.ToQueryString(options)}";
+        return parameters.Any() 
+            ? $"{requestUri ?? ""}?{parameters.ToQueryString(dateTimeFormat)}" 
+            : requestUri;
+    }
+    
+    private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+    private static List<string> BuildQueryString(this object obj, string? dateTimeFormat)
+    {
+        var queryList = new List<string>();
+        foreach (var p in obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        {
+            if (p.GetValue(obj, Array.Empty<object>()) != null)
+            {
+                var value = p.GetValue(obj, Array.Empty<object>());
+                if (value == null)
+                {
+                    continue;
+                }
+                
+                var name = p.Name.ToLower();
+                switch (p.PropertyType.IsArray)
+                {
+                    case true when value.GetType() == typeof(DateTime[]):
+                        queryList.AddRange(from item in (DateTime[])value select $"{name}={item.ToString(dateTimeFormat ?? DateTimeFormat)}");
+                        break;
+                    case true:
+                        queryList.AddRange(from object? item in (Array)value! select $"{name}={item}");
+                        break;
+                    default:
+                    {
+                        if (p.PropertyType.IsEnum())
+                        {
+                            queryList.Add($"{name}={(int)value}");
+                        }
+                        else if (p.PropertyType == typeof(string))
+                            queryList.Add($"{name}={value}");
+
+                        else if (p.PropertyType == typeof(DateTime) && !value!.Equals(Activator.CreateInstance(p.PropertyType))) // is not default 
+                            queryList.Add($"{name}={((DateTime)value).ToString(dateTimeFormat ?? DateTimeFormat)}");
+
+                        else if (p.PropertyType.IsValueType && !value!.Equals(Activator.CreateInstance(p.PropertyType))) // is not default 
+                            queryList.Add($"{name}={value}");
+
+
+                        else if (p.PropertyType.IsClass)
+                            BuildQueryString(value, dateTimeFormat);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return queryList;
     }
 }
