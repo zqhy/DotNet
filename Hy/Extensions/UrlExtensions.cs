@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
-using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Hy.Extensions;
@@ -44,72 +45,62 @@ public static class UrlExtensions
         return nvc;
     }
     
-    public static string ToQueryString(this IEnumerable<object> parameters, string? dateTimeFormat)
+    public static string ToQueryString(this IEnumerable<object> parameters, JsonSerializerOptions? jsonSerializerOptions)
     {
-        return string.Join("&", parameters.SelectMany(p => p.BuildQueryString(dateTimeFormat)));
+        return string.Join("&", parameters.SelectMany(p => p.BuildQueryString(jsonSerializerOptions)));
     }
-        
-    public static string? CreateGetMethodUrl(this string? requestUri, params object[] parameters)
+    
+    [return: NotNullIfNotNull(nameof(requestUri))]
+    public static string? CreateGetMethodUrl(this string? requestUri, params object?[] parameters)
     {
-        return parameters.Any() 
-            ? $"{requestUri ?? ""}?{parameters.ToQueryString(null)}" 
+        var parameterNotNulls = parameters.Where(p => p != null).Cast<object>().ToArray();
+        return parameterNotNulls.Any()
+            ? $"{requestUri ?? ""}?{parameterNotNulls.ToQueryString(null)}" 
             : requestUri;
     }
         
-    public static string? CreateGetMethodUrl(this string? requestUri, string? dateTimeFormat,  params object[] parameters)
+    [return: NotNullIfNotNull(nameof(requestUri))]
+    public static string? CreateGetMethodUrl(this string? requestUri, JsonSerializerOptions? jsonSerializerOptions,  params object?[] parameters)
     {
-        return parameters.Any() 
-            ? $"{requestUri ?? ""}?{parameters.ToQueryString(dateTimeFormat)}" 
+        var parameterNotNulls = parameters.Where(p => p != null).Cast<object>().ToArray();
+        return parameterNotNulls.Any() 
+            ? $"{requestUri ?? ""}?{parameterNotNulls.ToQueryString(jsonSerializerOptions)}" 
             : requestUri;
     }
     
-    private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
-    private static List<string> BuildQueryString(this object obj, string? dateTimeFormat)
+    private static IEnumerable<string> BuildQueryString(this object obj, JsonSerializerOptions? jsonSerializerOptions)
     {
         var queryList = new List<string>();
-        foreach (var p in obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        
+        var json = JsonSerializer.Serialize(obj, jsonSerializerOptions ?? JsonConfig.Get());
+        var queryData = JsonSerializer.Deserialize<IDictionary<string, object?>>(json, jsonSerializerOptions ?? JsonConfig.Get());
+        if (queryData == null) return queryList;
+        
+        foreach (var (key, o) in queryData.Where(p => p.Value != null).Cast<KeyValuePair<string, object>>())
         {
-            if (p.GetValue(obj, Array.Empty<object>()) != null)
+            var value = (JsonElement)o;
+            switch (value.ValueKind)
             {
-                var value = p.GetValue(obj, Array.Empty<object>());
-                if (value == null)
-                {
+                case JsonValueKind.Undefined:
+                case JsonValueKind.Null:
                     continue;
-                }
-                
-                var name = p.Name.ToLower();
-                switch (p.PropertyType.IsArray)
-                {
-                    case true when value.GetType() == typeof(DateTime[]):
-                        queryList.AddRange(from item in (DateTime[])value select $"{name}={item.ToString(dateTimeFormat ?? DateTimeFormat)}");
-                        break;
-                    case true:
-                        queryList.AddRange(from object? item in (Array)value! select $"{name}={item}");
-                        break;
-                    default:
-                    {
-                        if (p.PropertyType.IsEnum())
-                        {
-                            queryList.Add($"{name}={(int)value}");
-                        }
-                        else if (p.PropertyType == typeof(string))
-                            queryList.Add($"{name}={value}");
-
-                        else if (p.PropertyType == typeof(DateTime) && !value!.Equals(Activator.CreateInstance(p.PropertyType))) // is not default 
-                            queryList.Add($"{name}={((DateTime)value).ToString(dateTimeFormat ?? DateTimeFormat)}");
-
-                        else if (p.PropertyType.IsValueType && !value!.Equals(Activator.CreateInstance(p.PropertyType))) // is not default 
-                            queryList.Add($"{name}={value}");
-
-
-                        else if (p.PropertyType.IsClass)
-                            BuildQueryString(value, dateTimeFormat);
-                        break;
-                    }
-                }
+                case JsonValueKind.Object:
+                    queryList.AddRange(BuildQueryString(value, jsonSerializerOptions));
+                    break;
+                case JsonValueKind.Array:
+                    queryList.AddRange(from object? item in value.EnumerateArray() select $"{key}={item}");
+                    break;
+                case JsonValueKind.String:
+                case JsonValueKind.Number:
+                case JsonValueKind.True:
+                case JsonValueKind.False:
+                    queryList.Add($"{key}={value}");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
-
+        
         return queryList;
     }
 }
