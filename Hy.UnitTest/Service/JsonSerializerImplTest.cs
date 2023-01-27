@@ -1,14 +1,16 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Hy.Extensions;
 using Hy.JsonConverters;
+using Hy.Service;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hy.UnitTest.Extensions;
+namespace Hy.UnitTest.Service;
 
-public class UrlExtensionsTest
+public class JsonSerializerImplTest
 {
+    private IJsonSerializer _jsonSerializer;
+    
     [SetUp]
     public void Setup()
     {
@@ -24,12 +26,15 @@ public class UrlExtensionsTest
             options.Converters.Add(new NullableDateTimeConverter());
         });
         
+        serviceCollection.AddHyService();
+        
         var provider = serviceCollection.BuildServiceProvider();
-        provider.UseHyService();
+
+        _jsonSerializer = provider.GetRequiredService<IJsonSerializer>();
     }
 
     [Test]
-    public void TestCreateGetMethodUrl()
+    public void TestSerialize()
     {
         var queryObject = new object[]
         {
@@ -39,9 +44,11 @@ public class UrlExtensionsTest
                 ids = new[] { 1, 2, 3 }
             }
         };
-        var url = "Admin".CreateGetMethodUrl(queryObject);
-        Assert.AreEqual(url, "Admin?myEnum=2&dateTime=2023-01-27 11:48:54&name=haha&ids=1&ids=2&ids=3");
-        // Console.WriteLine(url);
+        var json = _jsonSerializer.Serialize(queryObject);
+        Assert.AreEqual(json, """
+        [{"myEnum":2,"dateTime":"2023-01-27 11:48:54","viewModel2":{"name":"haha"}},{"ids":[1,2,3]}]
+        """);
+        // Console.WriteLine(json);
     }
     
     private enum MyEnum
