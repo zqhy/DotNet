@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddHyService(this IServiceCollection services)
     {
-        services.AddTransient<IJsonSerializer, JsonSerializerImpl>();
+        services.AddSingleton<IJsonSerializer, JsonSerializerImpl>();
 
         return services;
     }
