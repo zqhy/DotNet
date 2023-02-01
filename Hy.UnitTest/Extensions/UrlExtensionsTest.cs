@@ -51,5 +51,5 @@ public class UrlExtensionsTest
     }
 
     private record ViewModel(MyEnum? MyEnum, MyEnum? Enum, DateTime? DateTime, ViewModel2 ViewModel2);
-    private record ViewModel2(string name);
+    private record ViewModel2(string Name);
 }
