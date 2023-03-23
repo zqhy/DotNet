@@ -2,7 +2,7 @@ namespace Hy.Extensions;
 
 public static class ObjectExtensions
 {
-    public static string? ToSafeString(this object? obj, string? defaultStr = null)
+    public static string? ToSafeString(this object? obj, string? defaultValue = null)
     {
         try
         {
@@ -10,12 +10,48 @@ public static class ObjectExtensions
         }
         catch
         {
-            return defaultStr;
+            return defaultValue;
         }
     }
 
-    public static int? ToSafeInt(this object obj)
+    public static short? ToSafeShort(this object? obj)
     {
+        if (obj == null)
+        {
+            return null;
+        }
+        try
+        {
+            return Convert.ToInt16(obj);
+        }
+        catch
+        {
+            return new short?();
+        }
+    }
+
+    public static short ToSafeShort(this object? obj, short defaultValue)
+    {
+        if (obj == null)
+        {
+            return defaultValue;
+        }
+        try
+        {
+            return Convert.ToInt16(obj);
+        }
+        catch
+        {
+            return defaultValue;
+        }
+    }
+
+    public static int? ToSafeInt(this object? obj)
+    {
+        if (obj == null)
+        {
+            return null;
+        }
         try
         {
             return Convert.ToInt32(obj);
@@ -26,32 +62,60 @@ public static class ObjectExtensions
         }
     }
 
-    public static int ToSafeInt(this object obj, int defaultStr)
+    public static int ToSafeInt(this object? obj, int defaultValue)
     {
+        if (obj == null)
+        {
+            return defaultValue;
+        }
         try
         {
             return Convert.ToInt32(obj);
         }
         catch
         {
-            return defaultStr;
+            return defaultValue;
         }
     }
 
-    public static bool ToSafeBool(this object obj, bool defaultBool = false)
+    public static bool? ToSafeBool(this object? obj)
     {
+        if (obj == null)
+        {
+            return null;
+        }
         try
         {
             return Convert.ToBoolean(obj);
         }
         catch
         {
-            return defaultBool;
+            return new bool?();
         }
     }
 
-    public static double? ToSafeDouble(this object obj)
+    public static bool ToSafeBool(this object? obj, bool defaultValue)
     {
+        if (obj == null)
+        {
+            return defaultValue;
+        }
+        try
+        {
+            return Convert.ToBoolean(obj);
+        }
+        catch
+        {
+            return defaultValue;
+        }
+    }
+
+    public static double? ToSafeDouble(this object? obj)
+    {
+        if (obj == null)
+        {
+            return null;
+        }
         try
         {
             return Convert.ToDouble(obj);
@@ -62,20 +126,28 @@ public static class ObjectExtensions
         }
     }
 
-    public static double ToSafeDouble(this object obj, double defaultDouble)
+    public static double ToSafeDouble(this object? obj, double defaultValue)
     {
+        if (obj == null)
+        {
+            return defaultValue;
+        }
         try
         {
             return Convert.ToDouble(obj);
         }
         catch
         {
-            return defaultDouble;
+            return defaultValue;
         }
     }
 
-    public static float? ToSafeFloat(this object obj)
+    public static float? ToSafeFloat(this object? obj)
     {
+        if (obj == null)
+        {
+            return null;
+        }
         try
         {
             return Convert.ToSingle(obj);
@@ -86,15 +158,19 @@ public static class ObjectExtensions
         }
     }
 
-    public static float ToSafeFloat(this object obj, float defaultFloat)
+    public static float ToSafeFloat(this object? obj, float defaultValue)
     {
+        if (obj == null)
+        {
+            return defaultValue;
+        }
         try
         {
             return Convert.ToSingle(obj);
         }
         catch
         {
-            return defaultFloat;
+            return defaultValue;
         }
     }
 }
