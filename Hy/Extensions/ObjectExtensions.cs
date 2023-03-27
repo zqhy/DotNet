@@ -173,4 +173,36 @@ public static class ObjectExtensions
             return defaultValue;
         }
     }
+
+    public static decimal? ToSafeDecimal(this object? obj)
+    {
+        if (obj == null)
+        {
+            return null;
+        }
+        try
+        {
+            return Convert.ToDecimal(obj);
+        }
+        catch
+        {
+            return new decimal?();
+        }
+    }
+
+    public static decimal ToSafeDecimal(this object? obj, decimal defaultValue)
+    {
+        if (obj == null)
+        {
+            return defaultValue;
+        }
+        try
+        {
+            return Convert.ToDecimal(obj);
+        }
+        catch
+        {
+            return defaultValue;
+        }
+    }
 }
