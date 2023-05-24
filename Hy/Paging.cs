@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Hy;
 
@@ -35,6 +36,7 @@ public record Paging
         TotalCount = totalCount;
     }
 
+    [JsonIgnore]
     [Display(Name = "总页数")]
     public int TotalPages
     {
@@ -56,12 +58,14 @@ public record Paging
     [Display(Name = "下一页")]
     public int? NextPage => Page >= TotalPages ? null : Page + 1;
     
+    [JsonIgnore]
     [Display(Name = "上一页")]
     public int? PreviousPage => Page == 1 || TotalPages <= 1 ? null : Page - 1;
     
-    
+    [JsonIgnore]
     [Display(Name = "开始页码")]
     public int StarPage => (Page - 1) * PageSize + 1;
+    [JsonIgnore]
     [Display(Name = "结束页码")]
     public int EndPage => Math.Min(Page * PageSize, TotalCount);
 }
