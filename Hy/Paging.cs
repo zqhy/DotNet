@@ -80,5 +80,7 @@ public record Paging<T> : Paging
         Items = items;
     }
 
-    public static Paging<T> Empty(int page, int pageSize) => new(Array.Empty<T>(), page, pageSize, 0);
+    public static Paging<T> Empty(int page, int pageSize, int totalCount = 0) => new(Array.Empty<T>(), page, pageSize, totalCount);
+
+    public static Paging<T> Empty(Paging paging) => new(Array.Empty<T>(), paging.Page, paging.PageSize, paging.TotalCount);
 }
