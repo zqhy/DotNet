@@ -7,7 +7,7 @@
         <Description>CSharp base library</Description>
         <RepositoryUrl>https://github.com/zqhy/DotNet</RepositoryUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>1.2.10</Version>
+        <Version>1.2.11</Version>
     </PropertyGroup>
 
     <ItemGroup>
