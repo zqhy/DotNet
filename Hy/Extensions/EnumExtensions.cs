@@ -45,6 +45,16 @@ public static class EnumExtensions
     {
         return enumSubItem.GetDisplay(isInherit)?.Prompt;
     }
+
+    public static string? GetDisplayGroupName(this Enum enumSubItem, bool isInherit = false)
+    {
+        return enumSubItem.GetDisplay(isInherit)?.GroupName;
+    }
+
+    public static int? GetDisplayOrder(this Enum enumSubItem, bool isInherit = false)
+    {
+        return enumSubItem.GetDisplay(isInherit)?.Order;
+    }
         
     public static T? GetEnumAttribute<T>(this Enum enumSubItem, bool isInherit) where T : Attribute
     {

@@ -54,6 +54,16 @@ public static class AttributeExtensions
         return type.GetDisplay(isInherit)?.Prompt;
     }
 
+    public static string? GetDisplayGroupName(this Type type, bool isInherit = false)
+    {
+        return type.GetDisplay(isInherit)?.GroupName;
+    }
+
+    public static int? GetDisplayOrder(this Type type, bool isInherit = false)
+    {
+        return type.GetDisplay(isInherit)?.Order;
+    }
+
     #endregion
 
     #region Property Base Attribute
@@ -103,6 +113,16 @@ public static class AttributeExtensions
     public static string? GetDisplayPrompt(this Type type, string propertyName, bool isInherit = false)
     {
         return type.GetDisplay(propertyName, isInherit)?.Prompt;
+    }
+
+    public static string? GetDisplayGroupName(this Type type, string propertyName, bool isInherit = false)
+    {
+        return type.GetDisplay(propertyName, isInherit)?.GroupName;
+    }
+
+    public static int? GetDisplayOrder(this Type type, string propertyName, bool isInherit = false)
+    {
+        return type.GetDisplay(propertyName, isInherit)?.Order;
     }
 
     #endregion
@@ -194,6 +214,12 @@ public static class AttributeExtensions
 
     public static string? GetDisplayPrompt(this Expression<Func<dynamic?>> accessor, bool isInherit = false) => 
         accessor.GetDisplay(isInherit)?.Prompt;
+
+    public static string? GetDisplayGroupName(this Expression<Func<dynamic?>> accessor, bool isInherit = false) =>
+        accessor.GetDisplay(isInherit)?.GroupName;
+
+    public static int? GetDisplayOrder(this Expression<Func<dynamic?>> accessor, bool isInherit = false) => 
+        accessor.GetDisplay(isInherit)?.Order;
         
         
     public static IEnumerable<TAttribute>? GetAttributes<TAttribute, TField>(this Expression<Func<TField>> accessor, bool isInherit)
@@ -231,6 +257,12 @@ public static class AttributeExtensions
 
     public static string? GetDisplayPrompt<TField>(this Expression<Func<TField>> accessor, bool isInherit = false) => 
         accessor.GetDisplay(isInherit)?.Prompt;
+
+    public static string? GetDisplayGroupName<TField>(this Expression<Func<TField>> accessor, bool isInherit = false) =>
+        accessor.GetDisplay(isInherit)?.GroupName;
+
+    public static int? GetDisplayOrder<TField>(this Expression<Func<TField>> accessor, bool isInherit = false) => 
+        accessor.GetDisplay(isInherit)?.Order;
         
     #endregion
         
@@ -369,6 +401,18 @@ public static class AttributeExtensions
         where TSource : class
     {
         return source.GetDisplay(keySelector, isInherit)?.Prompt;
+    }
+
+    public static string? GetDisplayGroupName<TSource>(this TSource source, Expression<Func<TSource, dynamic?>> keySelector, bool isInherit = false)
+        where TSource : class
+    {
+        return source.GetDisplay(keySelector, isInherit)?.GroupName;
+    }
+
+    public static int? GetDisplayOrder<TSource>(this TSource source, Expression<Func<TSource, dynamic?>> keySelector, bool isInherit = false)
+        where TSource : class
+    {
+        return source.GetDisplay(keySelector, isInherit)?.Order;
     }
         
     #endregion

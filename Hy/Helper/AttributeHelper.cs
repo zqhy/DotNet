@@ -54,6 +54,16 @@ public static class AttributeHelper
     {
         return GetDisplay<TSource>(isInherit)?.Prompt;
     }
+
+    public static string? GetDisplayGroupName<TSource>(bool isInherit = false)
+    {
+        return GetDisplay<TSource>(isInherit)?.GroupName;
+    }
+
+    public static int? GetDisplayOrder<TSource>(bool isInherit = false)
+    {
+        return GetDisplay<TSource>(isInherit)?.Order;
+    }
         
     #endregion
         
@@ -103,6 +113,16 @@ public static class AttributeHelper
     public static string? GetDisplayPrompt<TSource>(Expression<Func<TSource, dynamic?>> keySelector, bool isInherit = false)
     {
         return GetDisplay(keySelector, isInherit)?.Prompt;
+    }
+
+    public static string? GetDisplayGroupName<TSource>(Expression<Func<TSource, dynamic?>> keySelector, bool isInherit = false)
+    {
+        return GetDisplay(keySelector, isInherit)?.GroupName;
+    }
+
+    public static int? GetDisplayOrder<TSource>(Expression<Func<TSource, dynamic?>> keySelector, bool isInherit = false)
+    {
+        return GetDisplay(keySelector, isInherit)?.Order;
     }
         
     #endregion
