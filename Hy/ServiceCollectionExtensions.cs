@@ -15,11 +15,16 @@ public static class ServiceCollectionExtensions
         return services;
     }
     
-    public static IServiceProvider UseHyService(this IServiceProvider serviceProvider, string? environment, JsonSerializerOptions? jsonSerializerOptions = null)
+    public static IServiceProvider UseHyService(this IServiceProvider serviceProvider, string? environment, string? instanceId, JsonSerializerOptions? jsonSerializerOptions = null)
     {
         if (!string.IsNullOrEmpty(environment))
         {
             HostingEnvironmentHelper.SetEnvironment(environment);
+        }
+        
+        if (!string.IsNullOrEmpty(instanceId))
+        {
+            ProjectHelper.SetInstanceId(instanceId);
         }
         
         jsonSerializerOptions ??= serviceProvider.GetService<IOptions<JsonSerializerOptions>>()?.Value;
