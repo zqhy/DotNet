@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Hy.Helper;
 using Hy.Service;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -14,8 +15,13 @@ public static class ServiceCollectionExtensions
         return services;
     }
     
-    public static IServiceProvider UseHyService(this IServiceProvider serviceProvider, JsonSerializerOptions? jsonSerializerOptions = null)
+    public static IServiceProvider UseHyService(this IServiceProvider serviceProvider, string? environment, JsonSerializerOptions? jsonSerializerOptions = null)
     {
+        if (!string.IsNullOrEmpty(environment))
+        {
+            HostingEnvironmentHelper.SetEnvironment(environment);
+        }
+        
         jsonSerializerOptions ??= serviceProvider.GetService<IOptions<JsonSerializerOptions>>()?.Value;
         if (jsonSerializerOptions != null)
         {
