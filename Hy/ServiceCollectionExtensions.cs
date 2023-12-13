@@ -8,14 +8,7 @@ namespace Hy;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddHyService(this IServiceCollection services)
-    {
-        services.AddSingleton<IJsonSerializer, JsonSerializerImpl>();
-
-        return services;
-    }
-    
-    public static IServiceProvider UseHyService(this IServiceProvider serviceProvider, string? environment, string? instanceId, JsonSerializerOptions? jsonSerializerOptions = null)
+    public static IServiceCollection AddHyService(this IServiceCollection services, string? environment, string? instanceId)
     {
         if (!string.IsNullOrEmpty(environment))
         {
@@ -27,6 +20,13 @@ public static class ServiceCollectionExtensions
             ProjectHelper.SetInstanceId(instanceId);
         }
         
+        services.AddSingleton<IJsonSerializer, JsonSerializerImpl>();
+
+        return services;
+    }
+    
+    public static IServiceProvider UseHyService(this IServiceProvider serviceProvider, JsonSerializerOptions? jsonSerializerOptions = null)
+    {
         jsonSerializerOptions ??= serviceProvider.GetService<IOptions<JsonSerializerOptions>>()?.Value;
         if (jsonSerializerOptions != null)
         {

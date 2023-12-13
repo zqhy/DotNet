@@ -26,7 +26,7 @@ public class JsonSerializerImplTest
             options.Converters.Add(new NullableDateTimeConverter());
         });
         
-        serviceCollection.AddHyService();
+        serviceCollection.AddHyService(null, null);
         
         var provider = serviceCollection.BuildServiceProvider();
 

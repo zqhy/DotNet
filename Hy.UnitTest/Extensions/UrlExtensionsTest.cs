@@ -25,7 +25,7 @@ public class UrlExtensionsTest
         });
         
         var provider = serviceCollection.BuildServiceProvider();
-        provider.UseHyService(null, null);
+        provider.UseHyService();
     }
 
     [Test]
