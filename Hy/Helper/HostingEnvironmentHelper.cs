@@ -2,22 +2,22 @@ namespace Hy.Helper;
 
 public static class HostingEnvironmentHelper
 {
-    private static string? _environment;
-
+    public static string? Environment { get; private set; }
+    
     internal static void SetEnvironment(string environment)
     {
-        _environment = environment;
+        Environment = environment;
     }
-
-    public static bool? IsDevelopment() => _environment == null
+    
+    public static bool? IsDevelopment() => Environment == null
         ? null
-        : string.Equals(_environment, "Development", StringComparison.OrdinalIgnoreCase);
+        : string.Equals(Environment, "Development", StringComparison.OrdinalIgnoreCase);
 
-    public static bool? IsStaging() => _environment == null
+    public static bool? IsStaging() => Environment == null
         ? null
-        : string.Equals(_environment, "Staging", StringComparison.OrdinalIgnoreCase);
+        : string.Equals(Environment, "Staging", StringComparison.OrdinalIgnoreCase);
 
-    public static bool? IsProduction() => _environment == null
+    public static bool? IsProduction() => Environment == null
         ? null
-        : string.Equals(_environment, "Production", StringComparison.OrdinalIgnoreCase);
+        : string.Equals(Environment, "Production", StringComparison.OrdinalIgnoreCase);
 }
