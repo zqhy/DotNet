@@ -20,8 +20,7 @@ public class UrlExtensionsTest
             options.PropertyNameCaseInsensitive = true;    //忽略大小写
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;    // 驼峰式
             options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;    // 序列化中文时的编码问题
-            options.Converters.Add(new DateTimeConverter());
-            options.Converters.Add(new NullableDateTimeConverter());
+            // options.Converters.Add(new DateTimeConverter());
         });
         
         var provider = serviceCollection.BuildServiceProvider();
@@ -40,7 +39,7 @@ public class UrlExtensionsTest
             }
         };
         var url = "Admin".CreateGetMethodUrl(queryObject);
-        Assert.AreEqual(url, "Admin?myEnum=2&dateTime=2023-01-27 11:48:54&name=haha&ids=1&ids=2&ids=3");
+        Assert.AreEqual(url, "Admin?myEnum=2&dateTime=2023-01-27T11:48:54&name=haha&ids=1&ids=2&ids=3");
         // Console.WriteLine(url);
     }
     
